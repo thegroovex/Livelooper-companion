@@ -1,0 +1,34 @@
+# livelooper companion – X-Controls (designed by groovex)
+# install.command copies this block into ~/nativeKONTROL/ClyphX_Pro/X-Controls.txt
+#
+# Format: NAME = TYPE, CHANNEL, NOTE_OR_CC, OFF_LED, ON_LED, ON_ACTION_LIST
+# All on MIDI channel 16 / alles auf MIDI-Kanal 16.
+# Same numbers for the Stream Deck (IAC "LL Deck") and any pad controller.
+# Gleiche Nummern für das Stream Deck (IAC "LL Deck") und jeden Pad-Controller.
+
+# Source / Quelle
+LL_SRC_SYN1 = NOTE, 16, 36, 0, 127, $LL_SYN1$
+LL_SRC_SYN2 = NOTE, 16, 37, 0, 127, $LL_SYN2$
+LL_SRC_SYN3 = NOTE, 16, 38, 0, 127, $LL_SYN3$
+LL_SRC_RHY  = NOTE, 16, 39, 0, 127, $LL_RHY$
+LL_SRC_MIC  = NOTE, 16, 40, 0, 127, $LL_MIC$
+LL_SRC_PREV = NOTE, 16, 41, 0, 127, $LL_PREV$
+LL_SRC_NEXT = NOTE, 16, 42, 0, 127, $LL_NEXT$
+LL_SRC_OFF  = NOTE, 16, 43, 0, 127, $LL_OFF$
+
+# Presets of the armed synth / Presets des aktiven Synths
+LL_PRE1 = NOTE, 16, 44, 0, 127, $LL_PRE1$
+LL_PRE2 = NOTE, 16, 45, 0, 127, $LL_PRE2$
+LL_PRE3 = NOTE, 16, 46, 0, 127, $LL_PRE3$
+LL_PRE4 = NOTE, 16, 47, 0, 127, $LL_PRE4$
+LL_PRE5 = NOTE, 16, 48, 0, 127, $LL_PRE5$
+LL_PRE6 = NOTE, 16, 49, 0, 127, $LL_PRE6$
+LL_PRE7 = NOTE, 16, 50, 0, 127, $LL_PRE7$
+LL_PRE8 = NOTE, 16, 51, 0, 127, $LL_PRE8$
+LL_RACK_PREV = NOTE, 16, 52, 0, 127, $LL_RACK_PREV$
+LL_RACK_NEXT = NOTE, 16, 53, 0, 127, $LL_RACK_NEXT$
+
+# Looper transport is NOT handled here: the Stream Deck sends CC 20-23 on
+# channel 16, which you MIDI-map in Live straight to livelooper (Remote ON).
+# Looper-Transport läuft nicht über ClyphX: CC 20-23 auf Kanal 16 direkt in
+# Live auf livelooper mappen (Remote AN).
