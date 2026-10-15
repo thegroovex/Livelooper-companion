@@ -16,7 +16,7 @@ Wähle während der Performance per Knopfdruck, **welche Spur in livelooper aufg
 
 ## Installation in 3 Schritten
 1. **Voraussetzungen:** Ableton Live 12, ClyphX Pro (einmal in *Einstellungen → Link, Tempo & MIDI* als Control Surface gewählt), optional Stream Deck + Plugin *Midi* von Trevliga Spel.
-2. **Download** → `install.command` **doppelklicken**. Das Skript kopiert die User Action, trägt Makros und X-Controls in ClyphX Pro ein (mit Backup, mehrfach ausführbar) und legt die Stream-Deck-Icons auf den Schreibtisch.
+2. **Download** → `install.command` **doppelklicken**. Das Skript kopiert die User Action, trägt Makros und X-Controls in ClyphX Pro ein (mit Backup, mehrfach ausführbar) und legt die Stream-Deck-Icons auf den Schreibtisch. Meldet macOS „nicht verifizierter Entwickler“: Rechtsklick → Öffnen.
 3. **Live-Set anlegen** wie in [docs/de/setup.md](docs/de/setup.md) – 6 Spuren, 2 IAC-Ports, fertig.
 
 Stream Deck einrichten: [docs/de/stream-deck.md](docs/de/stream-deck.md) · Presets: [docs/de/presets.md](docs/de/presets.md) · Probleme: [docs/de/troubleshooting.md](docs/de/troubleshooting.md)

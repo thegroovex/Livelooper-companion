@@ -16,7 +16,7 @@ Pick **which track livelooper records** at the press of a key during a performan
 
 ## Install in 3 steps
 1. **Requirements:** Ableton Live 12, ClyphX Pro (selected once as Control Surface in *Settings → Link, Tempo & MIDI*), optionally a Stream Deck with the *Midi* plugin by Trevliga Spel.
-2. **Download** → **double-click** `install.command`. It copies the User Action, adds macros and X-Controls to ClyphX Pro (with backup, safe to run again) and puts the Stream Deck icons on your Desktop.
+2. **Download** → **double-click** `install.command`. It copies the User Action, adds macros and X-Controls to ClyphX Pro (with backup, safe to run again) and puts the Stream Deck icons on your Desktop. If macOS says “unidentified developer”: right-click → Open.
 3. **Build the Live Set** as in [docs/en/setup.md](docs/en/setup.md) – 6 tracks, 2 IAC ports, done.
 
 Stream Deck: [docs/en/stream-deck.md](docs/en/stream-deck.md) · Presets: [docs/en/presets.md](docs/en/presets.md) · Problems: [docs/en/troubleshooting.md](docs/en/troubleshooting.md)
