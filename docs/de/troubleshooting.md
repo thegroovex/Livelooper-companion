@@ -9,4 +9,5 @@
 | Mikro wird nicht aufgenommen | `Mic` Monitor *In*, richtiger Eingang, Pegel an der Spur sichtbar? |
 | Ich höre die Quelle doppelt | Siehe *Nichts doppelt hören* in setup.md. |
 | Preset wechselt nicht | Pigments als AU/VST2 statt VST3; Playlist angelegt; Synth-Spur scharf; `LL Synth` Eingang *Track* an; ClyphX Output = `LL Synth`. |
-| Ohne User Action arbeiten | In `X-Controls` `$LL_SYN1$` durch `$LLB_SYN1$` usw. ersetzen – nutzt nur eingebaute ClyphX-Actions. |
+| `LLSETUP` macht nichts | Es gibt schon eine Spur `LOOPER` – Action greift absichtlich nur in Sets ohne LOOPER. |
+| Quelle 1 ist eine falsche Spur | Quellen = alle Spuren links vom LOOPER. Spur löschen, nach rechts schieben oder Namen mit `_` beginnen. |

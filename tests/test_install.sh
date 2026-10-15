@@ -12,7 +12,7 @@ M="$T/nativeKONTROL/ClyphX_Pro/Macros.txt"
 grep -q '^\$MINE\$ = METRO' "$M" || { echo "user macro lost"; exit 1; }
 grep -q 'LLSRC 1' "$M"
 [ -f "$T/Music/Ableton/User Library/Remote Scripts/_user_actions/livelooper_companion.py" ]
-grep -q 'LL_SRC_SYN1 = NOTE, 16, 36' "$T/nativeKONTROL/ClyphX_Pro/X-Controls.txt"
+grep -q 'LL_SRC1 = NOTE, 16, 36' "$T/nativeKONTROL/ClyphX_Pro/X-Controls.txt"
 bash "$ROOT/uninstall.command" >/dev/null
 ! grep -q 'livelooper' "$M"
 grep -q '^\$MINE\$ = METRO' "$M"

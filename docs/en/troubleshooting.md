@@ -9,4 +9,5 @@
 | Mic not recorded | `Mic` monitor *In*, right input, level visible on the track? |
 | I hear the source twice | See *Avoid hearing things twice* in setup.md. |
 | Preset doesn't change | Pigments as AU/VST2 instead of VST3; playlist created; synth track armed; `LL Synth` input *Track* on; ClyphX Output = `LL Synth`. |
-| Work without the User Action | In `X-Controls` replace `$LL_SYN1$` with `$LLB_SYN1$` etc. – uses built-in ClyphX actions only. |
+| `LLSETUP` does nothing | A `LOOPER` track already exists – the action only works on sets without one. |
+| Source 1 is the wrong track | Sources = all tracks left of LOOPER. Delete it, move it right, or start its name with `_`. |

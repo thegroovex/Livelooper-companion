@@ -21,24 +21,39 @@ mod = importlib.import_module("livelooper_companion")
 class Opt:
     def __init__(self, n): self.display_name = n
 
+class Slot:
+    def __init__(self, has): self.has_clip = has
+
+class Song:
+    def __init__(self): self.tracks = []; self.view = types.SimpleNamespace(selected_track=None)
+    def _refresh(self):
+        names = [t.name for t in self.tracks]
+        for t in self.tracks:
+            t.available_input_routing_types = [Opt("No Input"), Opt("Ext. In")] + [
+                Opt(f"{i+1}-{n}") for i, n in enumerate(names) if n != t.name]
+    def create_midi_track(self, i): self.tracks.insert(i, Track("MIDI", True)); self._refresh()
+    def create_audio_track(self, i): self.tracks.insert(i, Track("Audio", False)); self._refresh()
+    def delete_track(self, i): del self.tracks[i]; self._refresh()
+
 class Track:
-    def __init__(self, name, midi, names=()):
+    def __init__(self, name, midi):
         self.name, self.has_midi_input, self.can_be_armed = name, midi, True
-        self.arm, self.current_monitoring_state = False, 1
-        self.available_input_routing_types = [Opt("No Input")] + [Opt(f"{i+1}-{n}") for i, n in enumerate(names)]
-        self.available_input_routing_channels = [Opt("Pre FX"), Opt("Post FX"), Opt("Post Mixer")]
+        self.arm, self.current_monitoring_state, self.is_foldable = False, 1, False
+        self.devices, self.clip_slots = [], [Slot(False)]
+        self.available_input_routing_types = []
+        self.available_input_routing_channels = [Opt("Pre FX"), Opt("Post FX"), Opt("Post Mixer"), Opt("1"), Opt("1/2")]
         self.input_routing_type = self.input_routing_channel = None
 
-def make():
-    names = mod.SOURCES
-    tracks = [Track(n, n != "Mic" and n != "Rhythm") for n in names]
-    looper = Track("LOOPER", False, names)
-    song = types.SimpleNamespace(tracks=tracks + [looper])
+def make(names=("Synth 1", "Synth 2", "Synth 3", "Rhythm", "Mic")):
+    song = Song()
+    for n in list(names) + ["LOOPER"]:
+        song.tracks.append(Track(n, n not in ("Mic", "LOOPER")))
+    song._refresh()
     ua = mod.LivelooperCompanionActions(song)
-    return ua, tracks, looper
+    return ua, song.tracks[:-1], song.tracks[-1]
 
 class T(unittest.TestCase):
-    def run_action(self, ua, arg): ua.actions["llsrc"]({}, arg)
+    def run_action(self, ua, arg, name="llsrc"): ua.actions[name]({}, arg)
 
     def test_select_by_number(self):
         ua, tr, lp = make(); self.run_action(ua, "2")
@@ -51,7 +66,7 @@ class T(unittest.TestCase):
         ua, tr, lp = make(); self.run_action(ua, '"Mic"')
         self.assertEqual(lp.input_routing_type.display_name, "5-Mic")
         self.assertEqual(tr[4].current_monitoring_state, 0)
-        self.assertFalse(any(t.arm for t in tr[:3]))
+        self.assertFalse(any(t.arm for t in tr[:4]))
 
     def test_next_prev_wrap(self):
         ua, tr, lp = make()
@@ -69,11 +84,36 @@ class T(unittest.TestCase):
         self.assertIsNone(lp.input_routing_type)
         self.assertIn("unknown", ua.messages[-1])
 
-    def test_exact_name_match(self):
-        ua, tr, lp = make()
-        lp.available_input_routing_types.append(Opt("Synth 3"))
-        self.run_action(ua, "3")
-        self.assertEqual(lp.input_routing_type.display_name, "Synth 3")
+    def test_twelve_sources_auto(self):
+        ua, tr, lp = make([f"Synth {i}" for i in range(1, 11)] + ["Rhythm", "Mic", "Extra"])
+        self.assertEqual(len(ua.sources()), 12)
+        self.run_action(ua, "12")
+        self.assertEqual(lp.input_routing_type.display_name, "12-Mic")
+
+    def test_underscore_and_groups_skipped(self):
+        ua, tr, lp = make(["_Click", "Synth 1", "Mic"])
+        self.assertEqual(ua.sources(), ["Synth 1", "Mic"])
+
+    def test_setup_builds_template(self):
+        song = Song()
+        for n, m in (("1-MIDI", True), ("2-MIDI", True), ("3-Audio", False), ("4-Audio", False)):
+            song.tracks.append(Track(n, m))
+        ua = mod.LivelooperCompanionActions(song)
+        self.run_action(ua, "10 NOPLUG", "llsetup")
+        names = [t.name for t in song.tracks]
+        self.assertEqual(names, [f"Synth {i}" for i in range(1, 9)] + ["Rhythm", "Mic", "LOOPER"])
+        mic = song.tracks[9]
+        self.assertEqual(mic.input_routing_type.display_name, "Ext. In")
+        self.assertEqual(mic.current_monitoring_state, 0)
+        self.assertEqual(len(ua.sources()), 10)
+
+    def test_setup_keeps_used_tracks_and_is_idempotent(self):
+        song = Song(); t = Track("1-MIDI", True); t.clip_slots = [Slot(True)]; song.tracks.append(t)
+        ua = mod.LivelooperCompanionActions(song)
+        self.run_action(ua, "", "llsetup"); n = len(song.tracks)
+        self.assertEqual(song.tracks[0].name, "1-MIDI")
+        self.run_action(ua, "", "llsetup")
+        self.assertEqual(len(song.tracks), n)
 
 if __name__ == "__main__":
     unittest.main()

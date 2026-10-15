@@ -5,17 +5,15 @@ from PIL import Image, ImageDraw, ImageFont
 OUT = Path(__file__).resolve().parent.parent / "streamdeck" / "icons"
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 SRC, PRE, TR = (255, 140, 40), (60, 200, 230), (235, 70, 70)
-KEYS = [  # file, label, sub, colour
-    ("01_synth1", "SYNTH", "1", SRC), ("02_synth2", "SYNTH", "2", SRC),
-    ("03_synth3", "SYNTH", "3", SRC), ("04_rhythm", "RHYTHM", "4", SRC),
-    ("05_mic", "MIC", "5", SRC),
-    ("06_preset1", "PRESET", "1", PRE), ("07_preset2", "PRESET", "2", PRE),
-    ("08_preset3", "PRESET", "3", PRE), ("09_preset4", "PRESET", "4", PRE),
-    ("10_src_off", "INPUT", "OFF", SRC),
-    ("11_rec", "LOOP", "REC", TR), ("12_play", "LOOP", "PLAY", (80, 210, 120)),
-    ("13_undo", "LOOP", "UNDO", TR), ("14_clear", "LOOP", "CLEAR", TR),
-    ("15_next", "SOURCE", "NEXT", SRC),
-]
+NAV = (170, 170, 180)
+PAGE1 = [(f"p1_{i:02d}_src{i}", "SOURCE", str(i), SRC) for i in range(1, 13)] + [
+    ("p1_13_prev", "SOURCE", "PREV", SRC), ("p1_14_next", "SOURCE", "NEXT", SRC),
+    ("p1_15_page", "PAGE", "2 >", NAV)]
+PAGE2 = [(f"p2_{i:02d}_preset{i}", "PRESET", str(i), PRE) for i in range(1, 9)] + [
+    ("p2_09_rec", "LOOP", "REC", TR), ("p2_10_play", "LOOP", "PLAY", (80, 210, 120)),
+    ("p2_11_undo", "LOOP", "UNDO", TR), ("p2_12_clear", "LOOP", "CLEAR", TR),
+    ("p2_13_off", "INPUT", "OFF", SRC), ("p2_14_next", "SOURCE", "NEXT", SRC),
+    ("p2_15_page", "PAGE", "< 1", NAV)]
 
 def key(label, sub, col):
     im = Image.new("RGB", (144, 144), (24, 26, 31))
@@ -29,13 +27,17 @@ def key(label, sub, col):
     d.text((72, 128), "livelooper", font=ImageFont.truetype(FONT, 11), fill=(120, 120, 128), anchor="mm")
     return im
 
+def sheet(keys, path):
+    tiles = [key(l, sub, c) for _, l, sub, c in keys]
+    im = Image.new("RGB", (5 * 150 + 6, 3 * 150 + 6), (10, 10, 12))
+    for i, t in enumerate(tiles):
+        im.paste(t, (6 + (i % 5) * 150, 6 + (i // 5) * 150))
+    im.save(path)
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    for name, label, sub, col in KEYS:
+    for name, label, sub, col in PAGE1 + PAGE2:
         key(label, sub, col).save(OUT / f"{name}.png")
-    tiles = [Image.open(OUT / f"{k[0]}.png") for k in KEYS]
-    sheet = Image.new("RGB", (5 * 150 + 6, 3 * 150 + 6), (10, 10, 12))
-    for i, t in enumerate(tiles):
-        sheet.paste(t, (6 + (i % 5) * 150, 6 + (i // 5) * 150))
-    sheet.save(OUT.parent / "layout.png")
-    print("ok", len(tiles))
+    sheet(PAGE1, OUT.parent / "layout-page1.png")
+    sheet(PAGE2, OUT.parent / "layout-page2.png")
+    print("ok", len(PAGE1) + len(PAGE2))

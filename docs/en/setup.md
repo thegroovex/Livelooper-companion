@@ -1,6 +1,6 @@
-# Setup (Live Set)
+# Setup
 
-About 10 minutes, once. Then save it as your template (*File → Save Live Set as Template*).
+About 10 minutes, once. You end up with a Live template that makes every new set ready to play.
 
 ## 1. Two virtual MIDI ports (IAC)
 1. Open **Audio MIDI Setup** (Applications → Utilities) → *Window → Show MIDI Studio*.
@@ -24,24 +24,33 @@ About 10 minutes, once. Then save it as your template (*File → Save Live Set a
 
 *Track off* on `LL Deck` matters – otherwise the keys play notes into your synths.
 
-## 3. Tracks (exact names)
-| # | Name | Settings |
-|---|---|---|
-| 1–3 | `Synth 1`, `Synth 2`, `Synth 3` | MIDI track, instrument (e.g. Pigments), input *All Ins / All Channels*, monitor *Auto*, output *Master* |
-| 4 | `Rhythm` | Drum Rack, clips or audio – just runs, output *Master* |
-| 5 | `Mic` | Audio track, input *Ext. In 1* (your mic), monitor *In*, output *Master* |
-| 6 | `LOOPER` | Audio track with **livelooper**, output *Master*. Input/monitor are set by the script. |
+## 3. Build the template automatically
+1. Open a **new, empty Live Set** (*File → New Live Set*).
+2. Double-click an empty clip slot on one of the MIDI tracks → new clip → **⌘ R** → name it **`[SETUP] LLSETUP 8`** (the number = sources, 3 to 12).
+3. Launch the clip. Within seconds you get:
 
-## 4. Avoid hearing things twice
-The source plays through its own track to Master **and** into LOOPER. If livelooper passes its input through, you hear it twice. Two ways:
-- **A (recommended):** turn input pass-through off in livelooper – you hear the source on its track and the loops on LOOPER.
-- **B:** set the output of tracks 1–5 to *Sends Only* – you then only hear the selected source (through livelooper); the others are silent.
+| Tracks | Settings |
+|---|---|
+| `Synth 1` … `Synth N-2` | MIDI track with **Pigments** (AU preferred) |
+| `Rhythm` | MIDI track – Drum Rack or clips of your choice |
+| `Mic` | Audio track, input *Ext. In 1*, monitor *In* |
+| `LOOPER` | Audio track with **livelooper** |
 
-## 5. Test
-Press **SYNTH 1** (or X-Control note 36, channel 16). Live's status bar shows `livelooper: recording source -> Synth 1`, Synth 1 is armed, LOOPER shows *Synth 1 · Post FX* as input.
+   Live's empty default tracks are removed; tracks with clips or devices are left alone. If a `LOOPER` already exists, the action changes nothing.
+4. Delete the track holding the setup clip, then **File → Save Live Set as Template**.
+
+If the action can't find a plug-in it says so in the status bar – just load it by hand. `LLSETUP 8 NOPLUG` creates the tracks only.
+
+## 4. More or fewer sources (dynamic)
+Every track **left of LOOPER** is a source – in track order, max 12. Insert a synth track left of LOOPER = new source. Name starting with `_` (e.g. `_Click`) or a group track = skipped. Fixed list instead: set `SOURCES = ['Synth 1', 'Bass', 'Mic']` at the top of `clyphx/user_actions/livelooper_companion.py` and reinstall.
+
+## 5. Avoid hearing things twice
+The source plays through its own track to Master **and** into LOOPER. If livelooper passes its input through, you hear it twice:
+- **A (recommended):** turn input pass-through off in livelooper.
+- **B:** set the source tracks' output to *Sends Only* – you then only hear the selected source (through livelooper).
+
+## 6. Test
+Press **SOURCE 1**. Live's status bar shows `livelooper: recording source -> Synth 1 (1/8)`, Synth 1 is armed, LOOPER shows *Synth 1 · Post FX* as input.
 
 ### Without a Stream Deck
-Any pad controller works: send notes 36–53 on **channel 16** and select it as ClyphX Pro *Input*. Or use X-Clips on an empty track, e.g. a clip named `[S1] $LL_SYN1$`.
-
-### Other track names
-Edit `SOURCES` and `LOOPER_TRACK` at the top of `clyphx/user_actions/livelooper_companion.py`, run `install.command` again, restart Live.
+Any pad controller works: send notes on **channel 16** (map in [stream-deck.md](stream-deck.md)) and select it as ClyphX Pro *Input*. Or X-Clips, e.g. `[S1] $LL_SRC1$`.
