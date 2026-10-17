@@ -1,9 +1,60 @@
-name: tests
-on: [push, pull_request]
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  test:
-    runs-on: macos-latest
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.f.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            code:
+              - 'clyphx/**'
+              - 'tests/**'
+              - 'tools/**'
+              - '*.command'
+              - '.github/workflows/**'
+  unit:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: python3 -m unittest discover -s tests -v
+  lint:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash -n install.command uninstall.command tests/test_install.sh
+      - run: python3 -m py_compile clyphx/user_actions/livelooper_companion.py tools/*.py
+      - name: generated ClyphX config up to date
+        run: python3 tools/gen_config.py && git diff --exit-code clyphx/
+  installer:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
       - run: bash tests/test_install.sh
+  result:
+    name: CI result
+    if: always()
+    needs: [changes, unit, lint, installer]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for r in "${{ needs.changes.result }}" "${{ needs.unit.result }}" "${{ needs.lint.result }}" "${{ needs.installer.result }}"; do
+            case "$r" in success|skipped) ;; *) echo "failed: $r"; exit 1;; esac
+          done
+          echo ok
